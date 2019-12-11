@@ -1,0 +1,65 @@
+{
+  "name": "ogma",
+  "version": "0.0.1",
+  "description": "A simple, no-nonsense logging package for NodeJS",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jmcdo29/ogma.git"
+  },
+  "keywords": [
+    "logging",
+    "colors",
+    "cli",
+    "terminal",
+    "nodejs"
+  ],
+  "author": "Jay McDoniel <jmcdo29@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jmcdo29/ogma/issues"
+  },
+  "homepage": "https://github.com/jmcdo29/ogma#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "^3.0.2",
+    "husky": "^3.1.0",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.5.0",
+    "npm-check": "^5.9.0",
+    "prettier": "^1.19.1",
+    "snyk": "^1.258.1",
+    "ts-jest": "^24.2.0",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-sonarts": "^1.9.0",
+    "typescript": "^3.7.3"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "tslint -p tsconfig.json",
+      "git add"
+    ],
+    "*.{md,html,json,js}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
