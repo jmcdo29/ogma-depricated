@@ -1,9 +1,16 @@
 {
   "name": "ogma",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "A simple, no-nonsense logging package for NodeJS",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build": "rimraf dist && tsc -p tsconfig.json",
+    "commit": "git-cz",
+    "lint": "tslint -p tsconfig.app.json",
     "test": "jest"
   },
   "repository": {
@@ -15,22 +22,29 @@
     "colors",
     "cli",
     "terminal",
-    "nodejs"
+    "nodejs",
+    "typescript"
   ],
-  "author": "Jay McDoniel <jmcdo29@gmail.com>",
+  "author": {
+    "name": "Jay McDoniel",
+    "email": "jmcdo29@gmail.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jmcdo29/ogma/issues"
   },
   "homepage": "https://github.com/jmcdo29/ogma#readme",
   "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
     "cz-conventional-changelog": "^3.0.2",
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "lint-staged": "^9.5.0",
     "npm-check": "^5.9.0",
     "prettier": "^1.19.1",
-    "snyk": "^1.258.1",
+    "rimraf": "^3.0.0",
+    "snyk": "^1.258.2",
     "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
