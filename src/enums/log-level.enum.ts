@@ -1,6 +1,6 @@
 export enum LogLevel {
   OFF,
-  SILLY,
+  ALL,
   VERBOSE,
   DEBUG,
   LOG,
@@ -9,4 +9,5 @@ export enum LogLevel {
   FATAL,
   INFO = LogLevel.LOG,
   FINE = LogLevel.VERBOSE,
+  SILLY = LogLevel.ALL,
 }

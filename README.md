@@ -25,11 +25,13 @@ To use Ogma, first you'll need to instantiate an instance of the Ogma class. You
 - ERROR: For errors about things that _are_ a problem. Colored with Red.
 - FATAL: Yeah, you should call someone at 3AM if this log ever shows up. Colored with Red.
 
+When discussing log levels, Ogma will print at the level provided and anything under the level as shown above, so if 'SILLY' is set, all logs will be show; if 'WARN' is set as the logLevel, only 'WARN', 'ERROR', and 'FATAL' logs will be shown. The only exclusion to this rule if 'OFF', which prints nothing through Ogma.
+
 When colors are enabled, the color mentioned above will be the color the level string is printed in.
 
 There is also the `printError` method on the `Ogma` class thta takes care of printing the error's name under the ERROR level, the message under the WARN level, and the stack trace under the VERBOSE level.
 
-> Note: INFO is also aliased as LOG so `ogma.log()` works just like `ogma.info()`, but the log level will stay as "INFO" in both cases. The same goes for "VERBOSE" and "FINE" with "FINE" being the log level printed (for the sake of being concise).
+> Note: INFO is also aliased as LOG so `ogma.log()` works just like `ogma.info()`, but the log level will stay as "INFO" in both cases. The same goes for "VERBOSE" and "FINE" with "FINE" being the log level printed (for the sake of being concise). Lastly, 'ALL' can be used for all logs. This is the same as setting `logLevel` to 'SILLY'.
 
 #### Ogma Options
 
@@ -126,3 +128,7 @@ I said the logs were beautiful, and to me they absolutely are. Each log is match
   }
 }
 ```
+
+### Example from Command Line
+
+![](Ogma-log.png)

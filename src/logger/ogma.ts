@@ -10,6 +10,7 @@ export class Ogma {
 
   constructor(options?: Partial<OgmaOptions>) {
     this.options = { ...OgmaDefaults, ...options };
+    this.options.logLevel = this.options.logLevel.toUpperCase() as keyof typeof LogLevel;
   }
 
   private printMessage(
