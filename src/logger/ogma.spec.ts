@@ -2,9 +2,6 @@ import { LogLevel } from '../enums';
 import { OgmaOptions } from '../interfaces';
 import { Ogma } from './ogma';
 
-const dateString = '1970-0101T00:00:00.000Z';
-
-Date.prototype.toISOString = () => dateString;
 process.stdout.hasColors = () => true;
 
 const circularObject: any = {};
