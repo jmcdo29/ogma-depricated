@@ -1,5 +1,7 @@
 <div align="center">
-  [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jmcdo29_ogma&metric=alert_status)](https://sonarcloud.io/dashboard?id=jmcdo29_ogma)[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![Actions Status](https://github.com/jmcdo29/ogma/workflows/CI/badge.svg)]
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jmcdo29_ogma&metric=alert_status)](https://sonarcloud.io/dashboard?id=jmcdo29_ogma)[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![Actions Status](https://github.com/jmcdo29/ogma/workflows/CI/badge.svg)]
+
 </div>
 
 # Ogma
