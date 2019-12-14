@@ -1,4 +1,4 @@
-import { LogLevel } from '../enums/log-level.enum';
+import { LogLevel } from '../enums';
 
 export interface OgmaOptions {
   logLevel: keyof typeof LogLevel;

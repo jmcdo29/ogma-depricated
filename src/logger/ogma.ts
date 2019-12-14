@@ -1,5 +1,5 @@
 import { Color, LogLevel } from '../enums';
-import { OgmaDefaults, OgmaOptions } from '../interfaces/ogma-options';
+import { OgmaDefaults, OgmaOptions } from '../interfaces';
 import { colorize } from '../utils/colorize';
 
 export class Ogma {
@@ -8,9 +8,27 @@ export class Ogma {
   public fine = this.verbose;
   public log = this.info;
 
+  /**
+   * Ogma constructor. Creates a new instance of Ogma
+   *
+   * @param options Partial of OgmaOptions which you want to use for your Ogma instance.
+   * Options include:
+   *
+   * * logLevel: The level of logs you want to show. Passed as a string
+   * * color: `true` if you want color, `false` if you don't. If your terminal does not allow color, this option will be ignored
+   * * stream: an object with a `write(message: any) => void` property. Useful if you want to log to a file instead of the console
+   */
   constructor(options?: Partial<OgmaOptions>) {
+    if (options?.logLevel) {
+      options.logLevel = options.logLevel.toUpperCase() as keyof typeof LogLevel;
+    }
     this.options = { ...OgmaDefaults, ...options };
-    this.options.logLevel = this.options.logLevel.toUpperCase() as keyof typeof LogLevel;
+    if (options?.logLevel && LogLevel[options.logLevel] === undefined) {
+      this.options.logLevel = OgmaDefaults.logLevel;
+      this.warn(
+        `Ogma logLevel was set to ${options.logLevel} which does not match a defined logLevel. Falling back to default instead.`,
+      );
+    }
   }
 
   private printMessage(
@@ -56,6 +74,11 @@ export class Ogma {
     return colorize(levelString, color, this.options.color);
   }
 
+  /**
+   * Silly log level. Prints SILLY in purple when color is enabled
+   *
+   * @param message the message to print out. Can also be a JSON object
+   */
   public silly(message: any): void {
     this.printMessage(
       LogLevel.SILLY,
@@ -64,6 +87,11 @@ export class Ogma {
     );
   }
 
+  /**
+   * Verbose log level. Prints FINE in green when color is enabled
+   *
+   * @param message the message to print out. Can also be a JSON object
+   */
   public verbose(message: any): void {
     this.printMessage(
       LogLevel.VERBOSE,
@@ -72,6 +100,11 @@ export class Ogma {
     );
   }
 
+  /**
+   * Debug log level. Prints DEBUG in blue when color is enabled
+   *
+   * @param message the message to print out. Can also be a JSON object
+   */
   public debug(message: any): void {
     this.printMessage(
       LogLevel.DEBUG,
@@ -80,6 +113,11 @@ export class Ogma {
     );
   }
 
+  /**
+   * Info log level. Prints INFO in cyan when color is enabled.
+   *
+   * @param message the message to print out. Can also be a JSON object
+   */
   public info(message: any): void {
     this.printMessage(
       LogLevel.INFO,
@@ -88,6 +126,10 @@ export class Ogma {
     );
   }
 
+  /**
+   * Warn log level. Prints WARN in yellow when color is enabled.
+   * @param message the message to print out. Can also be a JSON object
+   */
   public warn(message: any): void {
     this.printMessage(
       LogLevel.WARN,
@@ -96,6 +138,11 @@ export class Ogma {
     );
   }
 
+  /**
+   * Error log level. Prints ERROR in red when color is enabled.
+   *
+   * @param message the message to print out. Can also be a JSON object
+   */
   public error(message: any): void {
     this.printMessage(
       LogLevel.ERROR,
@@ -104,6 +151,11 @@ export class Ogma {
     );
   }
 
+  /**
+   * Fatal log level. Prints FATAL in red when color is enabled.
+   *
+   * @param message the message to print out. Can also be a JSON object
+   */
   public fatal(message: any): void {
     this.printMessage(
       LogLevel.FATAL,
@@ -112,6 +164,12 @@ export class Ogma {
     );
   }
 
+  /**
+   * Error printing utility method. Made to make things easier
+   *
+   * @param error The error that is to be printed. The name, message, and stack trace will be printed
+   * at the Error, Warn, and Verbose log level respectively
+   */
   public printError(error: Error): void {
     this.error(error.name);
     this.warn(error.message);
