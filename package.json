@@ -1,6 +1,6 @@
 {
   "name": "ogma",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple, no-nonsense logging package for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
