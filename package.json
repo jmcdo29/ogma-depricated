@@ -11,7 +11,9 @@
     "build": "rimraf dist && tsc -p tsconfig.app.json",
     "commit": "git-cz",
     "lint": "tslint -p tsconfig.app.json",
-    "test": "jest"
+    "test": "jest",
+    "preversion": "npx prettier --write 'src/**/*.ts' && npm run lint && npm run build",
+    "release": "npm publish"
   },
   "repository": {
     "type": "git",
