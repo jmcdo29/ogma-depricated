@@ -6,6 +6,9 @@ interface JSONLog {
   level: keyof typeof LogLevel;
   time: string;
   message: any;
+  context?: string;
+  pid: number;
+  application?: string;
 }
 
 export class Ogma {
@@ -13,6 +16,8 @@ export class Ogma {
 
   public fine = this.verbose;
   public log = this.info;
+
+  [index: string]: any;
 
   /**
    * Ogma constructor. Creates a new instance of Ogma
@@ -29,6 +34,12 @@ export class Ogma {
       options.logLevel = options.logLevel.toUpperCase() as keyof typeof LogLevel;
     }
     this.options = { ...OgmaDefaults, ...options };
+    for (const key of Object.keys(this.options)) {
+      this.options[key] =
+        this.options[key] === undefined || this.options[key] === null
+          ? OgmaDefaults[key]
+          : this.options[key];
+    }
     if (options?.logLevel && LogLevel[options.logLevel] === undefined) {
       this.options.logLevel = OgmaDefaults.logLevel;
       this.warn(
@@ -41,15 +52,22 @@ export class Ogma {
     level: LogLevel,
     formattedLevel: string,
     message: any,
+    application?: string,
+    context?: string,
   ): void {
     if (level < LogLevel[this.options.logLevel]) {
       return;
     }
     let logString = '';
     if (this.options.json) {
-      logString = this.formatJSON(level, message);
+      logString = this.formatJSON(level, message, application, context);
     } else {
-      logString = this.formatStream(formattedLevel, message);
+      logString = this.formatStream(
+        formattedLevel,
+        message,
+        application,
+        context,
+      );
     }
     this.options.stream.write(`${logString}\n`);
   }
@@ -71,24 +89,69 @@ export class Ogma {
   }
 
   private toColor(level: LogLevel, color: Color): string {
-    const levelString = ('[' + LogLevel[level] + ']').padEnd(7);
+    const levelString = this.wrapInBrackets(LogLevel[level]).padEnd(7);
     return colorize(levelString, color, this.options.color);
   }
 
-  private formatJSON(level: LogLevel, message: any): string {
+  private wrapInBrackets(valueToBeWrapper: string): string {
+    return '[' + valueToBeWrapper + ']';
+  }
+
+  private formatJSON(
+    level: LogLevel,
+    message: any,
+    application?: string,
+    context?: string,
+  ): string {
     const json: JSONLog = {
       level: LogLevel[level] as keyof typeof LogLevel,
       time: this.getTimestamp(),
       message,
+      pid: process.pid,
     };
+    if (application || this.options.application) {
+      json.application = application || this.options.application;
+    }
+    if (context || this.options.context) {
+      json.context = context || this.options.context;
+    }
     return JSON.stringify(json, this.circularReplacer());
   }
 
-  private formatStream(formattedLevel: string, message: any): string {
+  private formatStream(
+    formattedLevel: string,
+    message: any,
+    application?: string,
+    context?: string,
+  ): string {
     if (typeof message === 'object') {
       message = '\n' + JSON.stringify(message, this.circularReplacer(), 2);
     }
-    return `[${this.getTimestamp()}] ${formattedLevel}| ${message}`;
+    const arrayString = [
+      this.wrapInBrackets(this.getTimestamp()),
+      process.pid,
+      formattedLevel + ' |',
+    ];
+    if (application || this.options.application) {
+      arrayString.push(
+        colorize(
+          this.wrapInBrackets(application || this.options.application),
+          Color.YELLOW,
+          this.options.color,
+        ),
+      );
+    }
+    if (context || this.options.context) {
+      arrayString.push(
+        colorize(
+          this.wrapInBrackets(context || this.options.context),
+          Color.CYAN,
+          this.options.color,
+        ),
+      );
+    }
+    arrayString.push(message);
+    return arrayString.join(' ');
   }
 
   private getTimestamp(): string {
@@ -99,12 +162,16 @@ export class Ogma {
    * Silly log level. Prints SILLY in purple when color is enabled
    *
    * @param message the message to print out. Can also be a JSON object
+   * @param context the context to add the the log. Can be used to override class setting
+   * @param application the application name to add to the log. Can be used to override class setting
    */
-  public silly(message: any): void {
+  public silly(message: any, context?: string, application?: string): void {
     this.printMessage(
       LogLevel.SILLY,
       this.toColor(LogLevel.SILLY, Color.MAGENTA),
       message,
+      application,
+      context,
     );
   }
 
@@ -112,12 +179,16 @@ export class Ogma {
    * Verbose log level. Prints FINE in green when color is enabled
    *
    * @param message the message to print out. Can also be a JSON object
+   * @param context the context to add the the log. Can be used to override class setting
+   * @param application the application name to add to the log. Can be used to override class setting
    */
-  public verbose(message: any): void {
+  public verbose(message: any, context?: string, application?: string): void {
     this.printMessage(
       LogLevel.VERBOSE,
       this.toColor(LogLevel.VERBOSE, Color.GREEN),
       message,
+      application,
+      context,
     );
   }
 
@@ -125,12 +196,16 @@ export class Ogma {
    * Debug log level. Prints DEBUG in blue when color is enabled
    *
    * @param message the message to print out. Can also be a JSON object
+   * @param context the context to add the the log. Can be used to override class setting
+   * @param application the application name to add to the log. Can be used to override class setting
    */
-  public debug(message: any): void {
+  public debug(message: any, context?: string, application?: string): void {
     this.printMessage(
       LogLevel.DEBUG,
       this.toColor(LogLevel.DEBUG, Color.BLUE),
       message,
+      application,
+      context,
     );
   }
 
@@ -138,24 +213,32 @@ export class Ogma {
    * Info log level. Prints INFO in cyan when color is enabled.
    *
    * @param message the message to print out. Can also be a JSON object
+   * @param context the context to add the the log. Can be used to override class setting
+   * @param application the application name to add to the log. Can be used to override class setting
    */
-  public info(message: any): void {
+  public info(message: any, context?: string, application?: string): void {
     this.printMessage(
       LogLevel.INFO,
       this.toColor(LogLevel.INFO, Color.CYAN),
       message,
+      application,
+      context,
     );
   }
 
   /**
    * Warn log level. Prints WARN in yellow when color is enabled.
    * @param message the message to print out. Can also be a JSON object
+   * @param context the context to add the the log. Can be used to override class setting
+   * @param application the application name to add to the log. Can be used to override class setting
    */
-  public warn(message: any): void {
+  public warn(message: any, context?: string, application?: string): void {
     this.printMessage(
       LogLevel.WARN,
       this.toColor(LogLevel.WARN, Color.YELLOW),
       message,
+      application,
+      context,
     );
   }
 
@@ -163,12 +246,16 @@ export class Ogma {
    * Error log level. Prints ERROR in red when color is enabled.
    *
    * @param message the message to print out. Can also be a JSON object
+   * @param context the context to add the the log. Can be used to override class setting
+   * @param application the application name to add to the log. Can be used to override class setting
    */
-  public error(message: any): void {
+  public error(message: any, context?: string, application?: string): void {
     this.printMessage(
       LogLevel.ERROR,
       this.toColor(LogLevel.ERROR, Color.RED),
       message,
+      application,
+      context,
     );
   }
 
@@ -176,12 +263,16 @@ export class Ogma {
    * Fatal log level. Prints FATAL in red when color is enabled.
    *
    * @param message the message to print out. Can also be a JSON object
+   * @param context the context to add the the log. Can be used to override class setting
+   * @param application the application name to add to the log. Can be used to override class setting
    */
-  public fatal(message: any): void {
+  public fatal(message: any, context?: string, application?: string): void {
     this.printMessage(
       LogLevel.FATAL,
       this.toColor(LogLevel.FATAL, Color.RED),
       message,
+      application,
+      context,
     );
   }
 
@@ -191,9 +282,13 @@ export class Ogma {
    * @param error The error that is to be printed. The name, message, and stack trace will be printed
    * at the Error, Warn, and Verbose log level respectively
    */
-  public printError(error: Error): void {
-    this.error(error.name);
-    this.warn(error.message);
-    this.verbose('\n' + error.stack);
+  public printError(
+    error: Error,
+    context?: string,
+    application?: string,
+  ): void {
+    this.error(error.name, context, application);
+    this.warn(error.message, context, application);
+    this.verbose('\n' + error.stack, context, application);
   }
 }
