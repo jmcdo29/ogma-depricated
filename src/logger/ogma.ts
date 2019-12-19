@@ -2,6 +2,12 @@ import { Color, LogLevel } from '../enums';
 import { OgmaDefaults, OgmaOptions } from '../interfaces';
 import { colorize } from '../utils/colorize';
 
+interface JSONLog {
+  level: keyof typeof LogLevel;
+  time: string;
+  message: any;
+}
+
 export class Ogma {
   private options: OgmaOptions;
 
@@ -36,21 +42,16 @@ export class Ogma {
     formattedLevel: string,
     message: any,
   ): void {
-    const dateString = '[' + new Date().toISOString() + ']';
     if (level < LogLevel[this.options.logLevel]) {
       return;
     }
-    if (message && typeof message === 'object') {
-      this.options.stream.write(`${dateString} ${formattedLevel}|\n`);
-      this.options.stream.write(
-        JSON.stringify(message, this.circularReplacer(), 2),
-      );
-      this.options.stream.write('\n');
+    let logString = '';
+    if (this.options.json) {
+      logString = this.formatJSON(level, message);
     } else {
-      this.options.stream.write(
-        `${dateString} ${formattedLevel}| ${message}\n`,
-      );
+      logString = this.formatStream(formattedLevel, message);
     }
+    this.options.stream.write(`${logString}\n`);
   }
 
   private circularReplacer(): (key: string, value: any) => string {
@@ -72,6 +73,26 @@ export class Ogma {
   private toColor(level: LogLevel, color: Color): string {
     const levelString = ('[' + LogLevel[level] + ']').padEnd(7);
     return colorize(levelString, color, this.options.color);
+  }
+
+  private formatJSON(level: LogLevel, message: any): string {
+    const json: JSONLog = {
+      level: LogLevel[level] as keyof typeof LogLevel,
+      time: this.getTimestamp(),
+      message,
+    };
+    return JSON.stringify(json, this.circularReplacer());
+  }
+
+  private formatStream(formattedLevel: string, message: any): string {
+    if (typeof message === 'object') {
+      message = '\n' + JSON.stringify(message, this.circularReplacer(), 2);
+    }
+    return `[${this.getTimestamp()}] ${formattedLevel}| ${message}`;
+  }
+
+  private getTimestamp(): string {
+    return new Date().toISOString();
   }
 
   /**

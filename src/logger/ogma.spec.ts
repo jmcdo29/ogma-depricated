@@ -27,17 +27,23 @@ const justStream: Partial<OgmaOptions> = {
   stream: mockStream,
 };
 
+const jsonLogging: Partial<OgmaOptions> = {
+  json: true,
+  logLevel: 'ALL',
+};
+
 const allOptions: OgmaOptions = {
   logLevel: 'ALL',
   color: true,
   stream: mockStream,
+  json: false,
 };
 
 describe('Ogma class', () => {
   let ogma: Ogma;
   let stdoutSpy: jest.SpyInstance;
 
-  describe.each([justSilly, noColor, justStream, allOptions])(
+  describe.each([justSilly, noColor, justStream, jsonLogging, allOptions])(
     'Ogma with options %o',
     (options?: Partial<OgmaOptions>) => {
       beforeEach(() => {
@@ -79,26 +85,29 @@ describe('Ogma class', () => {
             ) {
               (ogma as any)[level.toLowerCase()](logMessage);
               if (typeof logMessage === 'object') {
-                expect(stdoutSpy).toBeCalledTimes(3);
+                expect(stdoutSpy).toBeCalledTimes(1);
                 expect(
-                  stdoutSpy.mock.calls[1][0].includes('[Circular]'),
+                  stdoutSpy.mock.calls[0][0].includes('[Circular]'),
                 ).toBeTruthy();
               } else {
                 expect(stdoutSpy).toBeCalledTimes(1);
               }
               let containString: string;
-              if (options?.color) {
+              if (options?.color && !options.json) {
                 containString = `m${(
                   '[' +
                   LogLevel[(LogLevel as any)[level]] +
                   ']'
                 ).padEnd(7)}\u001b[0m`;
-              } else {
+              } else if (!options?.json) {
                 containString = `${(
                   '[' +
                   LogLevel[(LogLevel as any)[level]] +
                   ']'
                 ).padEnd(7)}`;
+              } else {
+                containString =
+                  '"level":"' + LogLevel[(LogLevel as any)[level]] + '"';
               }
               expect(
                 stdoutSpy.mock.calls[0][0].includes(containString),
