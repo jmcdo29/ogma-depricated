@@ -39,6 +39,16 @@ There is also the `printError` method on the `Ogma` class thta takes care of pri
 
 > Note: INFO is also aliased as LOG so `ogma.log()` works just like `ogma.info()`, but the log level will stay as "INFO" in both cases. The same goes for "VERBOSE" and "FINE" with "FINE" being the log level printed (for the sake of being concise). Lastly, 'ALL' can be used for all logs. This is the same as setting `logLevel` to 'SILLY'.
 
+#### Adding Context and Application Name
+
+If for tracing purposes you'd like to add a context to the log, or an application name, you can pass the context to the method related to the logLevel (such as `ogma.debug('debug message, SomeClass.name, '[NestJS]')` and Ogma will print
+
+```sh
+[2019-12-19T23:01:23.900Z] 34760 [Debug] | [NestJS] [SomeClass] debug message
+```
+
+> Note: If colors are enabled, application will print in Yellow and context will print in Cyan.
+
 #### Ogma Options
 
 | name | type | use |
@@ -46,6 +56,9 @@ There is also the `printError` method on the `Ogma` class thta takes care of pri
 | logLevel | one of the above log levels (default: INFO) | for determining this instance of Ogma's log level |
 | color | boolean (default: true) | determine if color should attempt to be used. NOTE: Color will not be used if the current terminal does not support it |
 | stream | { write: (message: any) => void } (default: process.stdout) | the output mechanism used to know how to write logs |
+| json | boolean (default: false) | print the logs in a JSON format |
+| context | string optional | a context for the Ogma class to work with. |
+| application | string optional | an application name for Ogma to print |
 
 #### Using Files instead of a console
 
@@ -71,6 +84,10 @@ const fileWriter = new Ogma({
 
 fileWriter.log('Logging to File');
 ```
+
+#### JSON Logging
+
+If the `json` option is passed as `true` then regardless of `color` Ogma will print your message along with system information in a single line JSON object (i.e. no newline characters). View the sample below to get a better idea of Ogma's output.
 
 ### Applying color to Text
 
@@ -138,3 +155,5 @@ I said the logs were beautiful, and to me they absolutely are. Each log is match
 ### Example from Command Line
 
 ![](Ogma-log.png)
+
+![](Ogma-log-json.png)

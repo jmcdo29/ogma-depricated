@@ -1,5 +1,4 @@
 import { LogLevel } from '../enums';
-import { OgmaOptions } from '../interfaces';
 import { Ogma } from './ogma';
 
 process.stdout.hasColors = () => true;
@@ -12,114 +11,220 @@ circularObject.b = {
 circularObject.d = () => 'function';
 
 const mockStream = {
-  write: (message: any) => jest.fn(() => message),
+  write: jest.fn((message) => {
+    return;
+  }),
 };
 
-const justSilly: Partial<OgmaOptions> = {
-  logLevel: 'SILLY',
-};
+const logLevels = [
+  'SILLY',
+  'VERBOSE',
+  'FINE',
+  'DEBUG',
+  'INFO',
+  'LOG',
+  'WARN',
+  'ERROR',
+  'FATAL',
+];
 
-const noColor: Partial<OgmaOptions> = {
-  color: false,
-};
+const logOptions: Array<keyof typeof LogLevel> = [
+  'OFF',
+  'ALL',
+  'SILLY',
+  'VERBOSE',
+  'FINE',
+  'DEBUG',
+  'INFO',
+  'LOG',
+  'WARN',
+  'ERROR',
+  'FATAL',
+];
 
-const justStream: Partial<OgmaOptions> = {
-  stream: mockStream,
-};
+const streamOptions: Array<{ write: (message: any) => void } | undefined> = [
+  mockStream,
+  undefined,
+];
 
-const jsonLogging: Partial<OgmaOptions> = {
-  json: true,
-  logLevel: 'ALL',
-};
+const appOptions = ['TEST APP', ''];
 
-const allOptions: OgmaOptions = {
-  logLevel: 'ALL',
-  color: true,
-  stream: mockStream,
-  json: false,
-};
+const contextOption = ['TEST FUNC', ''];
+
+const colorOptions = [true, false];
+
+const jsonOptions = [true, false];
 
 describe('Ogma class', () => {
   let ogma: Ogma;
   let stdoutSpy: jest.SpyInstance;
+  describe.each(appOptions)('application %s', (application: string) => {
+    describe.each(contextOption)('context %s', (context: string) => {
+      describe.each(colorOptions)('color %s', (color: boolean) => {
+        describe.each(jsonOptions)('json %s', (json: boolean) => {
+          describe.each(logOptions)(
+            'log level %s',
+            (logLevel: keyof typeof LogLevel) => {
+              describe.each(streamOptions)(
+                'stream %j',
+                (stream: { write: (message: any) => void } | undefined) => {
+                  beforeEach(() => {
+                    ogma = new Ogma({
+                      logLevel,
+                      color,
+                      stream,
+                      json,
+                      context,
+                      application,
+                    });
+                  });
+                  describe.each(appOptions)(
+                    'method application %s',
+                    (methodApplication: string | undefined) => {
+                      describe.each(contextOption)(
+                        'method context %s',
+                        (methodContext: string | undefined) => {
+                          describe.each([
+                            'message',
+                            42,
+                            true,
+                            circularObject,
+                            () => 'func',
+                          ])('calling log method with %j', (logMessage) => {
+                            beforeEach(() => {
+                              if (stream) {
+                                stdoutSpy = jest
+                                  .spyOn(mockStream, 'write')
+                                  .mockImplementation((message) => {
+                                    return;
+                                  });
+                              } else {
+                                stdoutSpy = jest
+                                  .spyOn(process.stdout, 'write')
+                                  .mockImplementation((message: any) => true);
+                              }
+                            });
 
-  describe.each([justSilly, noColor, justStream, jsonLogging, allOptions])(
-    'Ogma with options %o',
-    (options?: Partial<OgmaOptions>) => {
-      beforeEach(() => {
-        ogma = new Ogma(options);
+                            afterEach(() => {
+                              stdoutSpy.mockReset();
+                            });
+                            it.each(logLevels as Array<keyof typeof LogLevel>)(
+                              'should call %s and all above it',
+                              (level) => {
+                                if (
+                                  LogLevel[level] >=
+                                  LogLevel[logLevel || 'INFO']
+                                ) {
+                                  ogma[level.toLowerCase()](
+                                    logMessage,
+                                    methodContext,
+                                    methodApplication,
+                                  );
+                                  if (typeof logMessage === 'object') {
+                                    expect(
+                                      stdoutSpy.mock.calls[0][0].includes(
+                                        '[Circular]',
+                                      ),
+                                    ).toBeTruthy();
+                                  }
+                                  let levelContainString: string;
+                                  let contextContainString = '';
+                                  let applicationContainString = '';
+                                  if (color && !json) {
+                                    levelContainString = `m${(
+                                      '[' +
+                                      LogLevel[LogLevel[level]] +
+                                      ']'
+                                    ).padEnd(7)}\u001b[0m`;
+                                    if (methodContext || context) {
+                                      contextContainString =
+                                        'm[' +
+                                        (methodContext || context) +
+                                        ']\u001b[0m';
+                                    }
+                                    if (methodApplication || application) {
+                                      applicationContainString =
+                                        'm[' +
+                                        (methodApplication || application) +
+                                        ']\u001b[0m';
+                                    }
+                                  } else if (!json) {
+                                    levelContainString = `${(
+                                      '[' +
+                                      LogLevel[LogLevel[level]] +
+                                      ']'
+                                    ).padEnd(7)}`;
+                                    if (methodContext || context) {
+                                      contextContainString =
+                                        '[' + (methodContext || context) + ']';
+                                    }
+                                    if (methodApplication || application) {
+                                      applicationContainString =
+                                        '[' +
+                                        (methodApplication || application) +
+                                        ']';
+                                    }
+                                  } else {
+                                    levelContainString =
+                                      '"level":"' +
+                                      LogLevel[LogLevel[level]] +
+                                      '"';
+                                    if (methodContext || context) {
+                                      contextContainString =
+                                        '"context":"' +
+                                        (methodContext || context) +
+                                        '"';
+                                    }
+                                    if (methodApplication || application) {
+                                      applicationContainString =
+                                        '"application":"' +
+                                        (methodApplication || application) +
+                                        '"';
+                                    }
+                                  }
+                                  expect(
+                                    stdoutSpy.mock.calls[0][0].includes(
+                                      levelContainString,
+                                    ),
+                                  ).toBeTruthy();
+                                  if (applicationContainString) {
+                                    expect(
+                                      stdoutSpy.mock.calls[0][0].includes(
+                                        applicationContainString,
+                                      ),
+                                    ).toBeTruthy();
+                                  }
+                                  if (contextContainString) {
+                                    expect(
+                                      stdoutSpy.mock.calls[0][0].includes(
+                                        contextContainString,
+                                      ),
+                                    ).toBeTruthy();
+                                  }
+                                  expect(stdoutSpy).toBeCalledTimes(1);
+                                } else {
+                                  expect(stdoutSpy).toBeCalledTimes(0);
+                                }
+                              },
+                            );
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
+        });
       });
+    });
+  });
+});
+describe('small ogma tests', () => {
+  let ogma: Ogma;
+  let stdoutSpy: jest.SpyInstance;
 
-      describe.each(['message', 42, true, circularObject, () => 'func'])(
-        'calling log method with %o',
-        (logMessage) => {
-          beforeEach(() => {
-            if (options?.stream) {
-              stdoutSpy = jest
-                .spyOn(mockStream, 'write')
-                .mockImplementation((message) => message);
-            } else {
-              stdoutSpy = jest
-                .spyOn(process.stdout, 'write')
-                .mockImplementation((message: any) => message);
-            }
-          });
-
-          afterEach(() => {
-            stdoutSpy.mockReset();
-          });
-          it.each([
-            'SILLY',
-            'VERBOSE',
-            'FINE',
-            'DEBUG',
-            'INFO',
-            'LOG',
-            'WARN',
-            'ERROR',
-            'FATAL',
-          ])('should call %s and all above it', (level: string) => {
-            if (
-              LogLevel[level as keyof typeof LogLevel] >=
-              LogLevel[options?.logLevel || 'INFO']
-            ) {
-              (ogma as any)[level.toLowerCase()](logMessage);
-              if (typeof logMessage === 'object') {
-                expect(stdoutSpy).toBeCalledTimes(1);
-                expect(
-                  stdoutSpy.mock.calls[0][0].includes('[Circular]'),
-                ).toBeTruthy();
-              } else {
-                expect(stdoutSpy).toBeCalledTimes(1);
-              }
-              let containString: string;
-              if (options?.color && !options.json) {
-                containString = `m${(
-                  '[' +
-                  LogLevel[(LogLevel as any)[level]] +
-                  ']'
-                ).padEnd(7)}\u001b[0m`;
-              } else if (!options?.json) {
-                containString = `${(
-                  '[' +
-                  LogLevel[(LogLevel as any)[level]] +
-                  ']'
-                ).padEnd(7)}`;
-              } else {
-                containString =
-                  '"level":"' + LogLevel[(LogLevel as any)[level]] + '"';
-              }
-              expect(
-                stdoutSpy.mock.calls[0][0].includes(containString),
-              ).toBeTruthy();
-            } else {
-              expect(stdoutSpy).toBeCalledTimes(0);
-            }
-          });
-        },
-      );
-    },
-  );
   describe('printError', () => {
     beforeEach(() => {
       ogma = new Ogma();
