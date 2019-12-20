@@ -103,18 +103,18 @@ export class Ogma {
     application?: string,
     context?: string,
   ): string {
-    const json: JSONLog = {
-      level: LogLevel[level] as keyof typeof LogLevel,
+    const json: Partial<JSONLog> = {
       time: this.getTimestamp(),
-      message,
-      pid: process.pid,
     };
     if (application || this.options.application) {
       json.application = application || this.options.application;
     }
+    json.pid = process.pid;
     if (context || this.options.context) {
       json.context = context || this.options.context;
     }
+    json.level = LogLevel[level] as keyof typeof LogLevel;
+    json.message = message;
     return JSON.stringify(json, this.circularReplacer());
   }
 
@@ -127,10 +127,8 @@ export class Ogma {
     if (typeof message === 'object') {
       message = '\n' + JSON.stringify(message, this.circularReplacer(), 2);
     }
-    const arrayString = [
+    const arrayString: Array<string | number> = [
       this.wrapInBrackets(this.getTimestamp()),
-      process.pid,
-      formattedLevel + ' |',
     ];
     if (application || this.options.application) {
       arrayString.push(
@@ -141,6 +139,7 @@ export class Ogma {
         ),
       );
     }
+    arrayString.push(process.pid);
     if (context || this.options.context) {
       arrayString.push(
         colorize(
@@ -150,7 +149,7 @@ export class Ogma {
         ),
       );
     }
-    arrayString.push(message);
+    arrayString.push(formattedLevel + '|', message);
     return arrayString.join(' ');
   }
 
