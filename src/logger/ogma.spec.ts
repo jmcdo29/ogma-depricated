@@ -225,16 +225,17 @@ describe('small ogma tests', () => {
   let ogma: Ogma;
   let stdoutSpy: jest.SpyInstance;
 
+  beforeEach(() => {
+    stdoutSpy = jest
+      .spyOn(process.stdout, 'write')
+      .mockImplementation((message) => message as any);
+  });
+  afterEach(() => {
+    stdoutSpy.mockReset();
+  });
   describe('printError', () => {
     beforeEach(() => {
       ogma = new Ogma();
-      stdoutSpy = jest
-        .spyOn(process.stdout, 'write')
-        .mockImplementation((message) => message as any);
-    });
-
-    afterEach(() => {
-      stdoutSpy.mockReset();
     });
 
     it('should make three prints', () => {
@@ -248,16 +249,6 @@ describe('small ogma tests', () => {
   });
 
   describe('Bad log level', () => {
-    beforeEach(() => {
-      stdoutSpy = jest
-        .spyOn(process.stdout, 'write')
-        .mockImplementation((message) => message as any);
-    });
-
-    afterEach(() => {
-      stdoutSpy.mockReset();
-    });
-
     it('should replace bad with "INFO"', () => {
       ogma = new Ogma({ logLevel: 'bad' as any });
       expect((ogma as any).options.logLevel).toBe('INFO');

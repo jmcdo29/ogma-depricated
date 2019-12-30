@@ -5,7 +5,7 @@ import { colorize } from '../utils/colorize';
 interface JSONLog {
   level: keyof typeof LogLevel;
   time: string;
-  message: any;
+  message?: any;
   context?: string;
   pid: number;
   application?: string;
@@ -103,7 +103,7 @@ export class Ogma {
     application?: string,
     context?: string,
   ): string {
-    const json: Partial<JSONLog> = {
+    let json: Partial<JSONLog> = {
       time: this.getTimestamp(),
     };
     if (application || this.options.application) {
@@ -114,7 +114,12 @@ export class Ogma {
       json.context = context || this.options.context;
     }
     json.level = LogLevel[level] as keyof typeof LogLevel;
-    json.message = message;
+    if (typeof message === 'object') {
+      json = { ...json, ...message };
+      delete json.message;
+    } else {
+      json.message = message;
+    }
     return JSON.stringify(json, this.circularReplacer());
   }
 

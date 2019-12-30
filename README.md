@@ -97,6 +97,8 @@ fileWriter.log('Logging to File');
 
 If the `json` option is passed as `true` then regardless of `color` Ogma will print your message along with system information in a single line JSON object (i.e. no newline characters). View the sample below to get a better idea of Ogma's output.
 
+> Note: if you log an object, the `message` property will be removed and the object will be a part of the raw JSON format. If you want the object to show up under the `message` property, you can add `JSON.stringify(obj).replace(/\"/g, '')`. Just be aware that circular objects will still be problematic unless you add a circular replacer.
+
 ### Applying color to Text
 
 No console logging package is complete without color, and because of that `Ogma` exports some utility methods for wrapping text in color, so long as your terminal of choice supports 3/4-bit color. You can find the the color reference in the screenshot below.
