@@ -37,3 +37,8 @@ describe('colorize defaults', () => {
     expect(colorize('hello')).toBe('hello');
   });
 });
+describe('it should print without process.stdout having a hasColors function', () => {
+  it('should still print', () => {
+    expect(colorize('hello')).toBe('hello');
+  });
+});
