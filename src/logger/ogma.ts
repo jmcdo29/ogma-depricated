@@ -90,7 +90,12 @@ export class Ogma {
 
   private toColor(level: LogLevel, color: Color): string {
     const levelString = this.wrapInBrackets(LogLevel[level]).padEnd(7);
-    return colorize(levelString, color, this.options.color);
+    return colorize(
+      levelString,
+      color,
+      this.options.color,
+      this.options.stream,
+    );
   }
 
   private wrapInBrackets(valueToBeWrapper: string): string {
@@ -141,6 +146,7 @@ export class Ogma {
           this.wrapInBrackets(application || this.options.application),
           Color.YELLOW,
           this.options.color,
+          this.options.stream,
         ),
       );
     }
@@ -151,6 +157,7 @@ export class Ogma {
           this.wrapInBrackets(context || this.options.context),
           Color.CYAN,
           this.options.color,
+          this.options.stream,
         ),
       );
     }

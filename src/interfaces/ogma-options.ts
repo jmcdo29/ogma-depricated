@@ -3,7 +3,8 @@ import { LogLevel } from '../enums';
 export interface OgmaOptions {
   logLevel: keyof typeof LogLevel;
   color: boolean;
-  stream: { write: (args: any) => void };
+  stream: Partial<NodeJS.WriteStream> &
+    Pick<NodeJS.WriteStream, 'write' | 'hasColors'>;
   json: boolean;
   context: string;
   application: string;
