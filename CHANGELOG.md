@@ -1,3 +1,10 @@
+## <small>2.0.1 (2020-01-04)</small>
+
+- docs(docs): add benchmarks and changelog ([8e1d9e4](https://github.com/jmcdo29/ogma/commit/8e1d9e4))
+- docs(docs): add benchmarks and changelog ([585b5e0](https://github.com/jmcdo29/ogma/commit/585b5e0))
+- test(color): fix failing test for colorize after adding new options ([817c0c0](https://github.com/jmcdo29/ogma/commit/817c0c0))
+- fix(color): color does not fail when stream does not have hasColors func ([26b85b2](https://github.com/jmcdo29/ogma/commit/26b85b2))
+
 <a name="2.0.0"></a>
 
 # [2.0.0](https://github.com/jmcdo29/ogma/compare/v1.0.0...v2.0.0) (2020-01-01)
