@@ -7,9 +7,13 @@ export function colorize(
   value: OgmaSimpleType,
   color: Color = Color.WHITE,
   useColor: boolean = true,
-  stream: Partial<NodeJS.WriteStream> = process.stdout,
+  stream: Partial<NodeJS.WritableStream | NodeJS.WriteStream> = process.stdout,
 ): string {
-  if (stream.hasColors && stream.hasColors() && useColor) {
+  if (
+    (stream as NodeJS.WriteStream).hasColors &&
+    (stream as NodeJS.WriteStream).hasColors() &&
+    useColor
+  ) {
     value = ESC + '[3' + color + 'm' + value + ESC + '[0m';
   }
   return value.toString();

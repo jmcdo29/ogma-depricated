@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/nestjs-testing';
 import { Color } from '../enums';
 import { OgmaSimpleType } from '../types';
 import { colorize } from './colorize';
@@ -33,12 +34,21 @@ describe.each([
 });
 describe('colorize defaults', () => {
   it('should print with defaults', () => {
-    (process as any) = undefined;
-    expect(colorize('hello')).toBe('hello');
+    const hasColors = process.stdout.hasColors;
+    process.stdout.hasColors = () => true;
+    expect(colorize('hello')).toBe(ESC + '[37mhello' + ESC + '[0m');
+    process.stdout.hasColors = hasColors;
   });
 });
-describe('it should print without process.stdout having a hasColors function', () => {
+describe('it should not print colors with a stream that does not support colors', () => {
   it('should still print', () => {
-    expect(colorize('hello')).toBe('hello');
+    expect(
+      colorize(
+        'hello',
+        Color.BLUE,
+        true,
+        createMock<NodeJS.WriteStream>({ hasColors: () => false }),
+      ),
+    ).toBe('hello');
   });
 });
