@@ -8,11 +8,13 @@
     "dist"
   ],
   "scripts": {
+    "benchmark:all": "tsc ./benchmark/ogmaUsageTest.ts && node ./benchmark/ogmaUsageTest.js all",
     "build": "rimraf dist && tsc -p tsconfig.app.json",
     "commit": "git-cz",
     "lint": "tslint -p tsconfig.json",
     "test": "jest",
     "preversion": "npx prettier --write 'src/**/*.ts' && npm run lint && npm run build",
+    "version": "conventional-changelog -p -i CHANGELOG.md -s && git add CHANGELOG.md",
     "release": "npm publish"
   },
   "repository": {
@@ -39,12 +41,16 @@
   "devDependencies": {
     "@commitlint/cli": "^8.2.0",
     "@commitlint/config-conventional": "^8.2.0",
+    "@golevelup/nestjs-testing": "^0.1.2",
     "@types/jest": "^24.0.23",
+    "@types/pino": "^5.15.1",
+    "conventional-changelog-cli": "^2.0.31",
     "cz-conventional-changelog": "^3.0.2",
     "husky": "^3.1.0",
     "jest": "^24.9.0",
     "lint-staged": "^9.5.0",
     "npm-check": "^5.9.0",
+    "pino": "^5.15.0",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.0",
     "snyk": "^1.258.2",
@@ -59,7 +65,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
+      "pre-commit": "npm run benchmark:all && lint-staged",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },

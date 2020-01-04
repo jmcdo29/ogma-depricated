@@ -1,3 +1,4 @@
+import { createMock } from '@golevelup/nestjs-testing';
 import { LogLevel } from '../enums';
 import { Ogma } from './ogma';
 
@@ -9,12 +10,6 @@ circularObject.b = {
   c: circularObject,
 };
 circularObject.d = () => 'function';
-
-const mockStream = {
-  write: jest.fn((message) => {
-    return;
-  }),
-};
 
 const logLevels = [
   'SILLY',
@@ -42,10 +37,13 @@ const logOptions: Array<keyof typeof LogLevel> = [
   'FATAL',
 ];
 
-const streamOptions: Array<{ write: (message: any) => void } | undefined> = [
-  mockStream,
-  undefined,
-];
+const mockStream = createMock<NodeJS.WriteStream>();
+
+const streamOptions: Array<
+  | (Partial<NodeJS.WriteStream> &
+      Pick<NodeJS.WriteStream, 'write' | 'hasColors'>)
+  | undefined
+> = [mockStream, undefined];
 
 const appOptions = ['TEST APP', ''];
 
@@ -67,7 +65,12 @@ describe('Ogma class', () => {
             (logLevel: keyof typeof LogLevel) => {
               describe.each(streamOptions)(
                 'stream %j',
-                (stream: { write: (message: any) => void } | undefined) => {
+                (
+                  stream:
+                    | (Partial<NodeJS.WriteStream> &
+                        Pick<NodeJS.WriteStream, 'write' | 'hasColors'>)
+                    | undefined,
+                ) => {
                   beforeEach(() => {
                     ogma = new Ogma({
                       logLevel,
@@ -95,8 +98,8 @@ describe('Ogma class', () => {
                               if (stream) {
                                 stdoutSpy = jest
                                   .spyOn(mockStream, 'write')
-                                  .mockImplementation((message) => {
-                                    return;
+                                  .mockImplementation((message: any) => {
+                                    return true;
                                   });
                               } else {
                                 stdoutSpy = jest
