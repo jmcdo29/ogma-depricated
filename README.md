@@ -167,3 +167,7 @@ I said the logs were beautiful, and to me they absolutely are. Each log is match
 ![](Ogma-log.png)
 
 ![](Ogma-log-json.png)
+
+## Benchmarks
+
+While Ogma may not boast as being as fast as pino, it is still quick with what it does. You can check out some of the [benchmarks here](./benchmark/benchmark.md).
