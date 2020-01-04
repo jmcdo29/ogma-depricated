@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "benchmark:all": "tsc ./benchmark/ogmaUsageTest.ts && node ./benchmark/ogmaUsageTest.js all",
+    "benchmark:all": "tsc ./benchmark/ogmaUsageTest.ts && node ./benchmark/ogmaUsageTest.js all && git add ./benchmark/benchmark.md",
     "build": "rimraf dist && tsc -p tsconfig.app.json",
     "commit": "git-cz",
     "lint": "tslint -p tsconfig.json",
