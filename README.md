@@ -63,30 +63,23 @@ Examples can be seen below. The JSON structure follows the same form with log le
 | --- | --- | --- |
 | logLevel | one of the above log levels (default: INFO) | for determining this instance of Ogma's log level |
 | color | boolean (default: true) | determine if color should attempt to be used. NOTE: Color will not be used if the current terminal does not support it |
-| stream | { write: (message: any) => void } (default: process.stdout) | the output mechanism used to know how to write logs |
+| stream | NodeJS.WriteStream OR NodeJS.WritableStream (default: process.stdout) | the output mechanism used to know how to write logs |
 | json | boolean (default: false) | print the logs in a JSON format |
 | context | string optional | a context for the Ogma class to work with. |
 | application | string optional | an application name for Ogma to print |
 
 #### Using Files instead of a console
 
-> Note: most files don't easily work with colors, so the color option should be passed as `false`
+> Note: Ogma will try to use colors if they are available, but will otherwise ignore the color option if `stream.hasColors()` return false.
 
 If you want to use a file to hold your logs instead of a console/terminal/bash you can pass in a stream of your own to the options like so:
 
 ```ts
-import { appendFile } from 'fs';
+import { createWriteStream } from 'fs';
 import { Ogma } from 'ogma';
 
 const fileWriter = new Ogma({
-  stream: {
-    write: (message: any): void => {
-      appendFile('server.log', message, (err) => {
-        if (err) {
-          throw err;
-        }
-      });
-    }
+  stream: createWriteStream('./server.log')
   }
 });
 
