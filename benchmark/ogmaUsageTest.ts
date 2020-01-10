@@ -6,7 +6,7 @@ import * as pino from 'pino';
 import * as winston from 'winston';
 import { color, Ogma } from '../dist';
 
-// tslint:disable-next-line: no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const printDeep = require('../package.json');
 
 const dest = createWriteStream('/dev/null');
@@ -60,34 +60,6 @@ function timeIt(
   return Date.now() - startTime + ' ms';
 }
 
-function benchmarkAll(times: number): void {
-  benchmark('hello world', 'basic', times);
-  benchmark(randomBytes(2000).toString(), 'long', times);
-  benchmark({ hello: 'world' }, 'json', times);
-  benchmark(printDeep, 'deep', times);
-}
-
-function benchmark(
-  print: any,
-  type: 'basic' | 'json' | 'long' | 'deep',
-  times: number,
-): void {
-  const ogmaTime = timeIt(print, ogmaFile, times);
-  const ogmaJsonTime = timeIt(print, ogmaJsonFile, times);
-  const pinoTime = timeIt(print, pinoFile, times);
-  const winstonJsonTime = timeIt(print, winstonJsonFile, times);
-  const bunyanTime = timeIt(print, bunyanFile, times);
-  writeResults(
-    type,
-    times,
-    ogmaTime,
-    ogmaJsonTime,
-    pinoTime,
-    winstonJsonTime,
-    bunyanTime,
-  );
-}
-
 function writeResults(
   test: string,
   numberOfPrints: number,
@@ -112,6 +84,34 @@ Number of Logs: __${numberOfPrints}__
 ---
 
 `);
+}
+
+function benchmark(
+  print: any,
+  type: 'basic' | 'json' | 'long' | 'deep',
+  times: number,
+): void {
+  const ogmaTime = timeIt(print, ogmaFile, times);
+  const ogmaJsonTime = timeIt(print, ogmaJsonFile, times);
+  const pinoTime = timeIt(print, pinoFile, times);
+  const winstonJsonTime = timeIt(print, winstonJsonFile, times);
+  const bunyanTime = timeIt(print, bunyanFile, times);
+  writeResults(
+    type,
+    times,
+    ogmaTime,
+    ogmaJsonTime,
+    pinoTime,
+    winstonJsonTime,
+    bunyanTime,
+  );
+}
+
+function benchmarkAll(times: number): void {
+  benchmark('hello world', 'basic', times);
+  benchmark(randomBytes(2000).toString(), 'long', times);
+  benchmark({ hello: 'world' }, 'json', times);
+  benchmark(printDeep, 'deep', times);
 }
 
 function benchmarkUsage(): void {

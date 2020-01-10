@@ -56,6 +56,7 @@ const jsonOptions = [true, false];
 describe('Ogma class', () => {
   let ogma: Ogma;
   let stdoutSpy: jest.SpyInstance;
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   describe.each(appOptions)('application %s', (application: string) => {
     describe.each(contextOption)('context %s', (context: string) => {
       describe.each(colorOptions)('color %s', (color: boolean) => {
@@ -98,13 +99,13 @@ describe('Ogma class', () => {
                               if (stream) {
                                 stdoutSpy = jest
                                   .spyOn(mockStream, 'write')
-                                  .mockImplementation((message: any) => {
+                                  .mockImplementation(() => {
                                     return true;
                                   });
                               } else {
                                 stdoutSpy = jest
                                   .spyOn(process.stdout, 'write')
-                                  .mockImplementation((message: any) => true);
+                                  .mockImplementation(() => true);
                               }
                             });
 
