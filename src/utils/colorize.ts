@@ -6,7 +6,7 @@ const ESC = '\x1B';
 export function colorize(
   value: OgmaSimpleType,
   color: Color = Color.WHITE,
-  useColor: boolean = true,
+  useColor = true,
   stream: Partial<NodeJS.WritableStream | NodeJS.WriteStream> = process.stdout,
 ): string {
   if (
