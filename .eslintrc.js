@@ -23,7 +23,7 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/interface-name-prefix': 'off',
   },
-  ignorePatterns: ['*.d.ts'],
+  ignorePatterns: ['*.d.ts', 'dist/*'],
   globals: {
     WeakSet: 'readonly',
   },
