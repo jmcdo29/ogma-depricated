@@ -4,11 +4,11 @@ Number of Logs: **10000**
 
 | Logger       | Time   |
 | ------------ | ------ |
-| Ogma Regular | 58 ms  |
-| Ogma JSON    | 48 ms  |
-| Pino         | 26 ms  |
-| Winston JSON | 120 ms |
-| Bunayn       | 61 ms  |
+| Ogma Regular | 50 ms  |
+| Ogma JSON    | 43 ms  |
+| Pino         | 23 ms  |
+| Winston JSON | 114 ms |
+| Bunayn       | 62 ms  |
 
 ---
 
@@ -18,11 +18,11 @@ Number of Logs: **10000**
 
 | Logger       | Time   |
 | ------------ | ------ |
-| Ogma Regular | 130 ms |
-| Ogma JSON    | 377 ms |
-| Pino         | 355 ms |
-| Winston JSON | 396 ms |
-| Bunayn       | 399 ms |
+| Ogma Regular | 120 ms |
+| Ogma JSON    | 352 ms |
+| Pino         | 325 ms |
+| Winston JSON | 382 ms |
+| Bunayn       | 374 ms |
 
 ---
 
@@ -33,10 +33,10 @@ Number of Logs: **10000**
 | Logger       | Time  |
 | ------------ | ----- |
 | Ogma Regular | 31 ms |
-| Ogma JSON    | 41 ms |
-| Pino         | 18 ms |
-| Winston JSON | 36 ms |
-| Bunayn       | 53 ms |
+| Ogma JSON    | 39 ms |
+| Pino         | 23 ms |
+| Winston JSON | 39 ms |
+| Bunayn       | 50 ms |
 
 ---
 
@@ -46,11 +46,11 @@ Number of Logs: **10000**
 
 | Logger       | Time   |
 | ------------ | ------ |
-| Ogma Regular | 302 ms |
-| Ogma JSON    | 280 ms |
-| Pino         | 175 ms |
-| Winston JSON | 315 ms |
-| Bunayn       | 203 ms |
+| Ogma Regular | 278 ms |
+| Ogma JSON    | 337 ms |
+| Pino         | 172 ms |
+| Winston JSON | 329 ms |
+| Bunayn       | 211 ms |
 
 ---
 

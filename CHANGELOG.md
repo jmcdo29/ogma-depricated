@@ -1,3 +1,13 @@
+## 2.1.0 (2020-01-17)
+
+- docs: update reamde ([2a74adc](https://github.com/jmcdo29/ogma/commit/2a74adc))
+- docs(command): updates readme with ogma command info ([da32252](https://github.com/jmcdo29/ogma/commit/da32252)), closes [#2](https://github.com/jmcdo29/ogma/issues/2)
+- test(command): add tests for ogma command ([fa9bd37](https://github.com/jmcdo29/ogma/commit/fa9bd37)), closes [#2](https://github.com/jmcdo29/ogma/issues/2)
+- test(command): allows tests to run parallel without failing ([a1326d4](https://github.com/jmcdo29/ogma/commit/a1326d4))
+- chore: update linter and formatter ([9e0ac54](https://github.com/jmcdo29/ogma/commit/9e0ac54))
+- feat(command): add command line function for rehydrating logs ([e6045fc](https://github.com/jmcdo29/ogma/commit/e6045fc)), closes [#2](https://github.com/jmcdo29/ogma/issues/2)
+- style: switch out tslint for eslint ([384ae36](https://github.com/jmcdo29/ogma/commit/384ae36))
+
 ## <small>2.0.1 (2020-01-04)</small>
 
 - docs(docs): add benchmarks and changelog ([8e1d9e4](https://github.com/jmcdo29/ogma/commit/8e1d9e4))
