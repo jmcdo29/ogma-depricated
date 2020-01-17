@@ -18,6 +18,7 @@ module.exports = {
     jest: true,
   },
   rules: {
+    // 'max-len': ['error', { code: 80, ignoreTemplateLiterals: true }],
     'no-control-regex': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -26,5 +27,6 @@ module.exports = {
   ignorePatterns: ['*.d.ts', 'dist/*'],
   globals: {
     WeakSet: 'readonly',
+    Promise: 'readonly',
   },
 };
