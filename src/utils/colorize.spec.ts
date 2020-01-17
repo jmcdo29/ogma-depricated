@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/nestjs-testing';
 import { Color } from '../enums';
 import { OgmaSimpleType } from '../types';
-import { colorize } from './colorize';
+import { colorize, colorizeCLI } from './colorize';
 
 const ESC = '\u001B';
 
@@ -50,5 +50,19 @@ describe('it should not print colors with a stream that does not support colors'
         createMock<NodeJS.WriteStream>({ hasColors: () => false }),
       ),
     ).toBe('hello');
+  });
+});
+
+describe('ColorizeCLI', () => {
+  it('should print with color', () => {
+    expect(colorizeCLI('hello', Color.BLUE, true)).toBe(
+      `\u001b[3${Color.BLUE}mhello\u001b[0m`,
+    );
+  });
+  it('should print without color', () => {
+    expect(colorizeCLI('hello', Color.BLUE, false)).toBe('hello');
+  });
+  it('should use the defaults', () => {
+    expect(colorizeCLI('hello')).toBe(`\u001b[3${Color.WHITE}mhello\u001b[0m`);
   });
 });
