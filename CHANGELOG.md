@@ -1,3 +1,7 @@
+## <small>2.1.1 (2020-01-17)</small>
+
+- fix(command): remove dep of tslib ([1dd3ee8](https://github.com/jmcdo29/ogma/commit/1dd3ee8))
+
 ## 2.1.0 (2020-01-17)
 
 - docs: update reamde ([2a74adc](https://github.com/jmcdo29/ogma/commit/2a74adc))
