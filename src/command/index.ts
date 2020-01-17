@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { ogma } from './command';
+import { ogmaHydrate } from './command';
 
-ogma(process.argv);
+ogmaHydrate(process.argv);

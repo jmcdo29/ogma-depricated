@@ -6,6 +6,6 @@ export interface OgmaLog {
   context?: string;
   message?: string;
   level: keyof typeof LogLevel;
-  pid: string;
+  pid: string | number;
   [key: string]: any;
 }
