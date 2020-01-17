@@ -1,7 +1,7 @@
 import { promises } from 'fs';
 import { Color, LogLevel } from '../enums';
 import { OgmaLog } from '../interfaces/ogma-log';
-import { colorize } from '../utils/colorize';
+import { colorizeCLI } from '../utils/colorize';
 import * as messages from './messages';
 
 const readFile = promises.readFile;
@@ -31,23 +31,23 @@ function getLevel(level: keyof typeof LogLevel, useColor: boolean): string {
   if (useColor) {
     switch (level) {
       case 'SILLY':
-        retString = colorize(retString, Color.MAGENTA);
+        retString = colorizeCLI(retString, Color.MAGENTA);
         break;
       case 'FINE':
-        retString = colorize(retString, Color.GREEN);
+        retString = colorizeCLI(retString, Color.GREEN);
         break;
       case 'DEBUG':
-        retString = colorize(retString, Color.BLUE);
+        retString = colorizeCLI(retString, Color.BLUE);
         break;
       case 'INFO':
-        retString = colorize(retString, Color.CYAN);
+        retString = colorizeCLI(retString, Color.CYAN);
         break;
       case 'WARN':
-        retString = colorize(retString, Color.YELLOW);
+        retString = colorizeCLI(retString, Color.YELLOW);
         break;
       case 'ERROR':
       case 'FATAL':
-        retString = colorize(retString, Color.RED);
+        retString = colorizeCLI(retString, Color.RED);
         break;
     }
   }
@@ -57,7 +57,7 @@ function getLevel(level: keyof typeof LogLevel, useColor: boolean): string {
 function getApplication(application: string, useColor: boolean): string {
   application = wrapInParens(application);
   if (useColor) {
-    application = colorize(application, Color.YELLOW);
+    application = colorizeCLI(application, Color.YELLOW);
   }
   return application;
 }
@@ -65,7 +65,7 @@ function getApplication(application: string, useColor: boolean): string {
 function getContext(context: string, useColor: boolean): string {
   context = wrapInParens(context);
   if (useColor) {
-    context = colorize(context, Color.CYAN);
+    context = colorizeCLI(context, Color.CYAN);
   }
   return context;
 }
