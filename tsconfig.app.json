@@ -3,5 +3,5 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "exclude": ["**/*.spec.ts", "benchmark/**/*.ts"]
+  "exclude": ["**/*.spec.ts", "benchmark/**/*.ts", "**/*.fixtures.ts"]
 }
