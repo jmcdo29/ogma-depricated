@@ -1,10 +1,10 @@
-import { readFile } from 'fs';
-import { promisify } from 'util';
+import { promises } from 'fs';
 import { Color, LogLevel } from '../enums';
 import { OgmaLog } from '../interfaces/ogma-log';
 import { colorize } from '../utils/colorize';
+import * as messages from './messages';
 
-const readPromise = promisify(readFile);
+const readFile = promises.readFile;
 
 const standardKeys = ['time', 'pid', 'level'];
 
@@ -30,19 +30,16 @@ function getLevel(level: keyof typeof LogLevel, useColor: boolean): string {
   let retString = wrapInParens(level).padEnd(7, ' ');
   if (useColor) {
     switch (level) {
-      case 'ALL':
       case 'SILLY':
         retString = colorize(retString, Color.MAGENTA);
         break;
       case 'FINE':
-      case 'VERBOSE':
         retString = colorize(retString, Color.GREEN);
         break;
       case 'DEBUG':
         retString = colorize(retString, Color.BLUE);
         break;
       case 'INFO':
-      case 'LOG':
         retString = colorize(retString, Color.CYAN);
         break;
       case 'WARN':
@@ -57,24 +54,47 @@ function getLevel(level: keyof typeof LogLevel, useColor: boolean): string {
   return retString;
 }
 
+function getApplication(application: string, useColor: boolean): string {
+  application = wrapInParens(application);
+  if (useColor) {
+    application = colorize(application, Color.YELLOW);
+  }
+  return application;
+}
+
+function getContext(context: string, useColor: boolean): string {
+  context = wrapInParens(context);
+  if (useColor) {
+    context = colorize(context, Color.CYAN);
+  }
+  return context;
+}
+
 async function rehydrate(
   fileName: string,
   useColor: boolean = process.stdout.isTTY,
 ) {
   let context;
   try {
-    context = (await readPromise(fileName)).toString();
+    context = (await readFile(fileName)).toString();
   } catch (err) {
-    process.stdout.write('There was an error reading the file.');
+    process.stderr.write(messages.generalError);
     process.stderr.write(err);
-    process.exit(1);
+    return process.exit(1);
   }
   const logs = context.split('\n').filter((log) => log);
-  if (!logs.every((log) => isOgmaFormat(JSON.parse(log)))) {
-    process.stderr.write(
-      'The log file provided is not in Ogma format. Please try another log file.',
-    );
-    process.exit(1);
+  if (
+    !logs.every((log) => {
+      try {
+        const parsedLog = JSON.parse(log);
+        return isOgmaFormat(parsedLog);
+      } catch (err) {
+        return false;
+      }
+    })
+  ) {
+    process.stderr.write(messages.badFormat);
+    return process.exit(1);
   }
   logs
     .map((log) => JSON.parse(log))
@@ -88,11 +108,11 @@ async function rehydrate(
       }
       let logMessage = wrapInParens(time) + ' ';
       if (application) {
-        logMessage += colorize(wrapInParens(application), Color.YELLOW) + ' ';
+        logMessage += getApplication(application, useColor) + ' ';
       }
       logMessage += pid + ' ';
       if (context) {
-        logMessage += colorize(wrapInParens(context), Color.CYAN) + ' ';
+        logMessage += getContext(context, useColor) + ' ';
       }
       logMessage += getLevel(level, useColor);
       logMessage += '| ';
@@ -101,18 +121,29 @@ async function rehydrate(
     });
 }
 
-export async function ogma(args: string[]): Promise<void> {
-  if (!process.argv[2]) {
-    process.stderr.write('Log file to rehydrate must be specified.');
-    process.exit(1);
+export async function ogmaHydrate(args: string[]): Promise<void> {
+  if (!args[2]) {
+    process.stderr.write(messages.missingFile);
+    return process.exit(1);
   }
   [, , ...args] = args;
   if (args.length === 1) {
     await rehydrate(args[0]);
+  } else if (args.length > 2) {
+    process.stderr.write(messages.tooManyArgs);
+    process.exit(1);
   } else if (args.some((arg) => arg.includes('--'))) {
     const flag = args.find((arg) => arg.includes('--')) as string;
     const file = args[args.length - args.indexOf(flag) - 1];
-    const useColor = JSON.parse(flag.split('=')[1]) ?? process.stdout.isTTY;
-    await rehydrate(file, useColor);
+    try {
+      const useColor = JSON.parse(flag.split('=')[1] || 'true');
+      await rehydrate(file, useColor);
+    } catch (err) {
+      process.stderr.write(messages.usage);
+      process.exit(1);
+    }
+  } else {
+    process.stderr.write(messages.usage);
+    return process.exit(1);
   }
 }

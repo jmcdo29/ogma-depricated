@@ -1,6 +1,9 @@
 import { createMock } from '@golevelup/nestjs-testing';
+import { createWriteStream } from 'fs';
 import { LogLevel } from '../enums';
 import { Ogma } from './ogma';
+
+const dest = createWriteStream('/dev/null');
 
 process.stdout.hasColors = () => true;
 
@@ -99,13 +102,17 @@ describe('Ogma class', () => {
                               if (stream) {
                                 stdoutSpy = jest
                                   .spyOn(mockStream, 'write')
-                                  .mockImplementation(() => {
+                                  .mockImplementation((message) => {
+                                    dest.write(message);
                                     return true;
                                   });
                               } else {
                                 stdoutSpy = jest
                                   .spyOn(process.stdout, 'write')
-                                  .mockImplementation(() => true);
+                                  .mockImplementation((message) => {
+                                    dest.write(message);
+                                    return true;
+                                  });
                               }
                             });
 
@@ -232,7 +239,10 @@ describe('small ogma tests', () => {
   beforeEach(() => {
     stdoutSpy = jest
       .spyOn(process.stdout, 'write')
-      .mockImplementation((message) => message as any);
+      .mockImplementation((message) => {
+        dest.write(message);
+        return true;
+      });
   });
   afterEach(() => {
     stdoutSpy.mockReset();

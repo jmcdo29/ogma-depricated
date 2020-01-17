@@ -32,6 +32,6 @@ jobs:
     - name: check format
       run: npx prettier --check 'src/**/*.ts'
     - name: npm test
-      run: npm run test
+      run: npm run test:ci
       env:
         CI: true
